@@ -1,0 +1,3 @@
+- request background permission if Android 10, API 29 or higher
+- request fine permission otherwise
+- test multiple versions
