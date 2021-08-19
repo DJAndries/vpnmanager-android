@@ -71,14 +71,23 @@ class MainActivity : AppCompatActivity() {
 //
 //        val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler;
 //        scheduler.schedule(job)
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            //Request permission from user
+//            ActivityCompat.requestPermissions(this, Array<String>(1) {Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 0);
+//        }
+        if (ActivityCompat.checkSelfPermission(this, "com.wireguard.android.permission.CONTROL_TUNNELS") != PackageManager.PERMISSION_GRANTED) {
             //Request permission from user
-            ActivityCompat.requestPermissions(this, Array<String>(1) {Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 0);
+            ActivityCompat.requestPermissions(this, Array<String>(1) {"com.wireguard.android.permission.CONTROL_TUNNELS"}, 1);
         }
         val wifiNet = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.ssid
         val wifiNetBssid = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.bssid
         Log.d(javaClass.name, "Avail! wifi: $wifiNet $wifiNetBssid")
         startService(Intent(this, NetworkChangeService::class.java))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        profileViewModel.load()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
