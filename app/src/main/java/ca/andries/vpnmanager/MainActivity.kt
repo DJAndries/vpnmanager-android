@@ -25,7 +25,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var permissionWrangler: PermissionWrangler
     private val profileViewModel: ProfileViewModel by viewModels()
+
+    private val profileConfigLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            profileViewModel.saveProfile(Json.decodeFromString(result.data?.getStringExtra(PROFILE_KEY)!!), null)
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        requestNextPermission(isGranted)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,16 +50,14 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        val profileConfig = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                profileViewModel.saveProfile(Json.decodeFromString(result.data?.getStringExtra(PROFILE_KEY)!!), null)
-            }
+        binding.fab.setOnClickListener { _ ->
+            profileConfigLauncher.launch(Intent(this, ProfileConfigActivity::class.java))
         }
 
-        binding.fab.setOnClickListener { view ->
-
-            profileConfig.launch(Intent(this, ProfileConfigActivity::class.java))
+        permissionWrangler = PermissionWrangler {
+            startService(Intent(this, NetworkChangeService::class.java))
         }
+        permissionWrangler.startPermissionCheck(this, requestPermissionLauncher)
 
 //        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 //        cm.registerNetworkCallback(NetworkRequest.Builder().build(), object : ConnectivityManager.NetworkCallback() {
@@ -71,18 +80,14 @@ class MainActivity : AppCompatActivity() {
 //
 //        val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler;
 //        scheduler.schedule(job)
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            //Request permission from user
-//            ActivityCompat.requestPermissions(this, Array<String>(1) {Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 0);
-//        }
-        if (ActivityCompat.checkSelfPermission(this, "com.wireguard.android.permission.CONTROL_TUNNELS") != PackageManager.PERMISSION_GRANTED) {
-            //Request permission from user
-            ActivityCompat.requestPermissions(this, Array<String>(1) {"com.wireguard.android.permission.CONTROL_TUNNELS"}, 1);
-        }
+
         val wifiNet = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.ssid
         val wifiNetBssid = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.bssid
         Log.d(javaClass.name, "Avail! wifi: $wifiNet $wifiNetBssid")
-        startService(Intent(this, NetworkChangeService::class.java))
+    }
+
+    private fun requestNextPermission(isGranted: Boolean) {
+        permissionWrangler.requestNextPermission(this, requestPermissionLauncher, isGranted)
     }
 
     override fun onResume() {

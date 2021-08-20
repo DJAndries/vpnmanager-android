@@ -16,6 +16,7 @@
     <string name="disable">Disable</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
+    <string name="ok">OK</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
     <string name="never_connected">Never connected</string>
@@ -38,9 +39,14 @@
     <string name="cancel">Cancel</string>
     <string name="no_profiles">No profiles at the moment!\nFeel free to add one.</string>
 
+    <string name="permission_request">Permission request</string>
+    <string name="fine_location_perm_prompt">VPN Manager has the ability to enable/disable VPNs for specific Wi-Fi SSIDs. This feature requires the location permission. If you are not interested in this feature, you may deny access to this permission.</string>
+    <string name="bg_location_perm_prompt">In order for VPN Manager to monitor the connected Wi-FI SSID in the background, the location permission must "allowed all the time".</string>
+
     <string name="main_pref_key">main_prefs</string>
     <string name="profiles_pref_key">profiles</string>
     <string name="profiles_next_id_key">next_pid</string>
+    <string name="perm_check_key">perm_check</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

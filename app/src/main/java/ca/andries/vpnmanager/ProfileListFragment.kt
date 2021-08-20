@@ -1,11 +1,9 @@
 package ca.andries.vpnmanager
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +24,7 @@ class ProfileListFragment : Fragment() {
 
     private val model: ProfileViewModel by activityViewModels()
 
-    val profileConfigResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    val profileConfigLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             model.saveProfile(Json.decodeFromString(result.data?.getStringExtra(
                 ProfileConfigActivity.PROFILE_KEY
@@ -68,7 +66,7 @@ class ProfileListFragment : Fragment() {
         val intent = Intent(context, ProfileConfigActivity::class.java)
         intent.putExtra(ProfileConfigActivity.PROFILE_KEY, Json.encodeToString(profile))
         intent.putExtra(ProfileConfigActivity.PROFILE_ID_KEY, id)
-        profileConfigResult.launch(intent)
+        profileConfigLauncher.launch(intent)
     }
 
     private fun toggleProfile(id: Int) {
