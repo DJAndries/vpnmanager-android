@@ -9,12 +9,10 @@ class Profile(
     val tunnelName: String,
     val enableForWifi: Boolean,
     val enableForMobile: Boolean,
-    val disableForWifi: Boolean,
-    val disableForMobile: Boolean,
-    val enableSsidList: List<String>,
-    val enableCarrierList: List<String>,
-    val disableSsidList: List<String>,
-    val disableCarrierList: List<String>,
+    val ssidInclList: List<String>,
+    val ssidExclList: List<String>,
+    val carrierInclList: List<String>,
+    val carrierExclList: List<String>,
 
     var enabled: Boolean = true,
     var lastConnectionDate: Long? = null

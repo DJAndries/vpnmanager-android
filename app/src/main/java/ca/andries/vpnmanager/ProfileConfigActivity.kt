@@ -74,39 +74,27 @@ class ProfileConfigActivity : AppCompatActivity() {
     }
 
     private fun initEnableDisableInputs(existingProfile: Profile?) {
-        val conditionCombos = listOf(
-            ConditionCombo(
-                binding.enableWifiWhitelist,
-                binding.enableWifiConditionToggle,
-                existingProfile?.enableForWifi ?: false,
-                existingProfile?.enableSsidList
-            ),
-            ConditionCombo(
-                binding.enableMobileWhitelist,
-                binding.enableMobileConditionToggle,
-                existingProfile?.enableForMobile ?: false,
-                existingProfile?.enableCarrierList
-            ),
-            ConditionCombo(
-                binding.disableWifiWhitelist,
-                binding.disableWifiConditionToggle,
-                existingProfile?.disableForWifi ?: false,
-                existingProfile?.disableSsidList
-            ),
-            ConditionCombo(
-                binding.disableMobileWhitelist,
-                binding.disableMobileConditionToggle,
-                existingProfile?.disableForMobile ?: false,
-                existingProfile?.disableCarrierList
-            )
-        )
-        for (conditionCombo in conditionCombos) {
-            conditionCombo.list.visibility = if (conditionCombo.enabled) View.VISIBLE else View.GONE
-            conditionCombo.list.editText?.setText(conditionCombo.listValue?.joinToString("\n"))
-            conditionCombo.toggle.isChecked = conditionCombo.enabled
-            conditionCombo.toggle.setOnCheckedChangeListener { _, isChecked ->
-                conditionCombo.list.visibility = if (isChecked) View.VISIBLE else View.GONE
-            }
+        val wifiEnabled = existingProfile?.enableForWifi ?: false
+        val mobileEnabled = existingProfile?.enableForMobile ?: false
+        binding.ssidExclListLayout.visibility = if (wifiEnabled) View.VISIBLE else View.GONE
+        binding.ssidInclListLayout.visibility = if (wifiEnabled) View.VISIBLE else View.GONE
+        binding.carrierExclListLayout.visibility = if (mobileEnabled) View.VISIBLE else View.GONE
+        binding.carrierInclListLayout.visibility = if (mobileEnabled) View.VISIBLE else View.GONE
+
+        binding.ssidExclListInput.setText(existingProfile?.ssidExclList?.joinToString("\n") ?: "")
+        binding.ssidInclListInput.setText(existingProfile?.ssidInclList?.joinToString("\n") ?: "")
+        binding.carrierExclListInput.setText(existingProfile?.carrierExclList?.joinToString("\n") ?: "")
+        binding.carrierInclListInput.setText(existingProfile?.carrierInclList?.joinToString("\n") ?: "")
+
+        binding.enableWifiConditionToggle.isChecked = existingProfile?.enableForWifi ?: false
+        binding.enableWifiConditionToggle.setOnCheckedChangeListener { _, isChecked ->
+            binding.ssidExclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            binding.ssidInclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+        binding.enableMobileConditionToggle.isChecked = existingProfile?.enableForMobile ?: false
+        binding.enableMobileConditionToggle.setOnCheckedChangeListener { _, isChecked ->
+            binding.carrierExclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            binding.carrierInclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
     }
 
@@ -131,16 +119,14 @@ class ProfileConfigActivity : AppCompatActivity() {
             binding.tunnelInput.text.toString(),
             binding.enableWifiConditionToggle.isChecked,
             binding.enableMobileConditionToggle.isChecked,
-            binding.disableWifiConditionToggle.isChecked,
-            binding.disableMobileConditionToggle.isChecked,
-            binding.enableWifiWhitelistInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> !v.isEmpty() } ?: listOf(),
-            binding.enableMobileWhitelistInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> !v.isEmpty() } ?: listOf(),
-            binding.disableWifiWhitelistInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> !v.isEmpty() } ?: listOf(),
-            binding.disableMobileWhitelistInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> !v.isEmpty() } ?: listOf()
+            binding.ssidInclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
+            binding.ssidExclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
+            binding.carrierInclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
+            binding.carrierExclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() } ?: listOf()
         )
 
         val id = if (intent.hasExtra(PROFILE_ID_KEY)) intent.getIntExtra(PROFILE_ID_KEY, 0) else null
@@ -156,11 +142,4 @@ class ProfileConfigActivity : AppCompatActivity() {
         val PROFILE_KEY = "profile"
         val PROFILE_ID_KEY = "pid"
     }
-
-    private class ConditionCombo(
-        val list: TextInputLayout,
-        val toggle: SwitchMaterial,
-        val enabled: Boolean,
-        val listValue: List<String>?
-    )
 }

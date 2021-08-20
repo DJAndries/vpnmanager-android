@@ -28,8 +28,8 @@
                 android:hint="@string/profile_name">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp"
                     android:id="@+id/profileNameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -52,8 +52,8 @@
                 <AutoCompleteTextView
                     android:id="@+id/vpnProvInput"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp"
                     android:layout_height="wrap_content"
                     android:inputType="none"
                     android:singleLine="true" />
@@ -75,8 +75,8 @@
                     android:id="@+id/tunnelInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/enable_condition_prompt"
+                android:text="@string/conditions"
                 android:textStyle="bold" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -106,22 +106,43 @@
                 android:text="@string/condition_wifi" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/enableWifiWhitelist"
+                android:id="@+id/ssidInclListLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/ssid_whitelist_label">
+                android:background="@android:color/transparent"
+                android:hint="@string/ssid_incl_list_label"
+                app:boxBackgroundColor="@android:color/transparent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/enableWifiWhitelistInput"
+                    android:id="@+id/ssidInclListInput"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ssidExclListLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/ssid_excl_list_label"
+                app:boxBackgroundColor="@android:color/transparent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ssidExclListInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -135,7 +156,7 @@
                 android:text="@string/condition_mobile" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/enableMobileWhitelist"
+                android:id="@+id/carrierInclListLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -144,72 +165,19 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/carrier_whitelist_label">
+                android:hint="@string/carrier_incl_list_label">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/enableMobileWhitelistInput"
+                    android:id="@+id/carrierInclListInput"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp"
                     android:layout_height="wrap_content" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <View
-                android:id="@+id/divider3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="?android:attr/listDivider" />
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/disable_condition_prompt"
-                android:textStyle="bold" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/disableWifiConditionToggle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/condition_wifi" />
-
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/disableWifiWhitelist"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:hint="@string/ssid_whitelist_label">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/disableWifiWhitelistInput"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
-                    android:layout_height="wrap_content" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/disableMobileConditionToggle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/condition_mobile" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/disableMobileWhitelist"
+                android:id="@+id/carrierExclListLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -218,12 +186,12 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/carrier_whitelist_label">
+                android:hint="@string/carrier_excl_list_label">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginEnd="-8dp"
-                    android:id="@+id/disableMobileWhitelistInput"
+                    android:layout_marginStart="-12dp"
+                    android:layout_marginEnd="-12dp"
+                    android:id="@+id/carrierExclListInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
