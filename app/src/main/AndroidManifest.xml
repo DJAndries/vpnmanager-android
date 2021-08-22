@@ -24,7 +24,7 @@
             android:label="@string/edit_profile" />
 
         <service
-            android:name=".NetworkChangeService"
+            android:name=".MainService"
             android:enabled="true"
             android:exported="true" />
 

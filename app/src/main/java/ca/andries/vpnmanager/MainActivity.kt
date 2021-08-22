@@ -1,8 +1,6 @@
 package ca.andries.vpnmanager
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import ca.andries.vpnmanager.ProfileConfigActivity.Companion.PROFILE_KEY
 import ca.andries.vpnmanager.databinding.ActivityMainBinding
 import kotlinx.serialization.decodeFromString
@@ -31,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private val profileConfigLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             profileViewModel.saveProfile(Json.decodeFromString(result.data?.getStringExtra(PROFILE_KEY)!!), null)
+            MainService.reloadFromActivity(this)
         }
     }
 
@@ -55,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         permissionWrangler = PermissionWrangler {
-            startService(Intent(this, NetworkChangeService::class.java))
+            startService(Intent(this, MainService::class.java))
         }
         permissionWrangler.startPermissionCheck(this, requestPermissionLauncher)
 

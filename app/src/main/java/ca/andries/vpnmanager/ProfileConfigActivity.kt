@@ -3,6 +3,7 @@ package ca.andries.vpnmanager
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -74,27 +75,35 @@ class ProfileConfigActivity : AppCompatActivity() {
     }
 
     private fun initEnableDisableInputs(existingProfile: Profile?) {
-        val wifiEnabled = existingProfile?.enableForWifi ?: false
-        val mobileEnabled = existingProfile?.enableForMobile ?: false
-        binding.ssidExclListLayout.visibility = if (wifiEnabled) View.VISIBLE else View.GONE
-        binding.ssidInclListLayout.visibility = if (wifiEnabled) View.VISIBLE else View.GONE
-        binding.carrierExclListLayout.visibility = if (mobileEnabled) View.VISIBLE else View.GONE
-        binding.carrierInclListLayout.visibility = if (mobileEnabled) View.VISIBLE else View.GONE
+        binding.ssidExclListLayout.visibility = if (existingProfile?.wifiRule == RuleMode.ALL) View.VISIBLE else View.GONE
+        binding.ssidInclListLayout.visibility = if (existingProfile?.wifiRule == RuleMode.SOME) View.VISIBLE else View.GONE
+
+        when (existingProfile?.wifiRule) {
+            RuleMode.ALL -> binding.wifiRadioAll.isChecked = true
+            RuleMode.SOME -> binding.wifiRadioSome.isChecked = true
+            RuleMode.NONE -> binding.wifiRadioNone.isChecked = true
+        }
+
+        binding.carrierExclListLayout.visibility = if (existingProfile?.mobileRule == RuleMode.ALL) View.VISIBLE else View.GONE
+        binding.carrierInclListLayout.visibility = if (existingProfile?.mobileRule == RuleMode.SOME) View.VISIBLE else View.GONE
+        when (existingProfile?.mobileRule) {
+            RuleMode.ALL -> binding.mobileRadioAll.isChecked = true
+            RuleMode.SOME -> binding.mobileRadioSome.isChecked = true
+            RuleMode.NONE -> binding.mobileRadioNone.isChecked = true
+        }
 
         binding.ssidExclListInput.setText(existingProfile?.ssidExclList?.joinToString("\n") ?: "")
         binding.ssidInclListInput.setText(existingProfile?.ssidInclList?.joinToString("\n") ?: "")
         binding.carrierExclListInput.setText(existingProfile?.carrierExclList?.joinToString("\n") ?: "")
         binding.carrierInclListInput.setText(existingProfile?.carrierInclList?.joinToString("\n") ?: "")
 
-        binding.enableWifiConditionToggle.isChecked = existingProfile?.enableForWifi ?: false
-        binding.enableWifiConditionToggle.setOnCheckedChangeListener { _, isChecked ->
-            binding.ssidExclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
-            binding.ssidInclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+        binding.wifiRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            binding.ssidExclListLayout.visibility = if (checkedId == R.id.wifiRadioAll) View.VISIBLE else View.GONE
+            binding.ssidInclListLayout.visibility = if (checkedId == R.id.wifiRadioSome) View.VISIBLE else View.GONE
         }
-        binding.enableMobileConditionToggle.isChecked = existingProfile?.enableForMobile ?: false
-        binding.enableMobileConditionToggle.setOnCheckedChangeListener { _, isChecked ->
-            binding.carrierExclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
-            binding.carrierInclListLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+        binding.mobileRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            binding.carrierExclListLayout.visibility = if (checkedId == R.id.mobileRadioAll) View.VISIBLE else View.GONE
+            binding.carrierInclListLayout.visibility = if (checkedId == R.id.mobileRadioSome) View.VISIBLE else View.GONE
         }
     }
 
@@ -114,25 +123,41 @@ class ProfileConfigActivity : AppCompatActivity() {
     }
 
     private fun submitInputs() {
+
+        val wifiRule = when (binding.wifiRadioGroup.checkedRadioButtonId) {
+            R.id.wifiRadioAll -> RuleMode.ALL
+            R.id.wifiRadioSome -> RuleMode.SOME
+            else -> RuleMode.NONE
+        }
+
+        val mobileRule = when (binding.mobileRadioGroup.checkedRadioButtonId) {
+            R.id.mobileRadioAll -> RuleMode.ALL
+            R.id.mobileRadioSome -> RuleMode.SOME
+            else -> RuleMode.NONE
+        }
+
         val profile = Profile(
             binding.profileNameInput.text.toString(),
             binding.tunnelInput.text.toString(),
-            binding.enableWifiConditionToggle.isChecked,
-            binding.enableMobileConditionToggle.isChecked,
-            binding.ssidInclListInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
-            binding.ssidExclListInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
-            binding.carrierInclListInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> v.isNotEmpty() } ?: listOf(),
-            binding.carrierExclListInput.text?.split("\n")?.map { v -> v.trim() }
-                ?.filter { v -> v.isNotEmpty() } ?: listOf()
+            wifiRule,
+            mobileRule,
+            binding.matchingPriority.value.toInt(),
+            LinkedHashSet(binding.ssidInclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() }),
+            LinkedHashSet(binding.ssidExclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() }),
+            LinkedHashSet(binding.carrierInclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() }),
+            LinkedHashSet(binding.carrierExclListInput.text?.split("\n")?.map { v -> v.trim() }
+                ?.filter { v -> v.isNotEmpty() })
         )
 
         val id = if (intent.hasExtra(PROFILE_ID_KEY)) intent.getIntExtra(PROFILE_ID_KEY, 0) else null
 
+        val encodedProfile = Json.encodeToString(profile)
+        Log.i(javaClass.name, "Saving profile: $encodedProfile")
         val intent = Intent()
-        intent.putExtra(PROFILE_KEY, Json.encodeToString(profile))
+        intent.putExtra(PROFILE_KEY, encodedProfile)
         if (id != null) intent.putExtra(PROFILE_ID_KEY, id)
         setResult(RESULT_OK, intent)
         finish()

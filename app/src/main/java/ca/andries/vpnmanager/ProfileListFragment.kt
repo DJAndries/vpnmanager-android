@@ -29,6 +29,7 @@ class ProfileListFragment : Fragment() {
             model.saveProfile(Json.decodeFromString(result.data?.getStringExtra(
                 ProfileConfigActivity.PROFILE_KEY
             )!!), result.data?.getIntExtra(ProfileConfigActivity.PROFILE_ID_KEY, 0))
+            MainService.reloadFromActivity(requireContext())
         }
     }
 
@@ -67,6 +68,7 @@ class ProfileListFragment : Fragment() {
 
     private fun toggleProfile(id: Int) {
         model.toggleProfile(id)
+        MainService.reloadFromActivity(requireContext())
     }
 
     private fun deleteProfile(id: Int) {
@@ -77,6 +79,7 @@ class ProfileListFragment : Fragment() {
             ?.setMessage(R.string.delete_confirm)
             ?.setPositiveButton(R.string.confirm) { _, _ ->
                 model.deleteProfile(id)
+                MainService.reloadFromActivity(requireContext())
             }
             ?.setNegativeButton(R.string.cancel) { _, _ -> }
             ?.show()
