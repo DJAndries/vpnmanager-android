@@ -26,17 +26,10 @@ class MainService : Service() {
         if (intent?.getBooleanExtra(RELOAD_FLAG, false) == true) {
             Log.i(javaClass.name, "Reload intent received")
             profileStore.load(this)
-            loadEnabledProfiles()
             val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (connManager.activeNetworkInfo?.isAvailable == true) performCheck()
         }
         return START_STICKY
-    }
-
-    private fun loadEnabledProfiles() {
-        enabledProfiles = profileStore.getProfiles().entries
-            .filter { it.value.enabled }.sortedBy { it.key }
-            .reversed().map { Pair(it.key, it.value) }
     }
 
     private fun performCheck() {
@@ -47,47 +40,55 @@ class MainService : Service() {
         val wifiName = wifiManager.connectionInfo.ssid.replace("(^\")|(\"$)".toRegex(), "")
         val carrierName = teleManager.simOperatorName
 
-        var currentMatch: Pair<Int, Profile>? = null
+        var currentMatch: Map.Entry<Int, Profile>? = null
         var currentMatchPriority = 0
 
-        for (profile in enabledProfiles) {
-            if (!profile.second.enabled || profile.second.priority <= currentMatchPriority) continue
+        for (profileEntry in profileStore.getProfiles().entries) {
+            val profile = profileEntry.value
+            if (!profile.enabled || profile.priority <= currentMatchPriority) continue
 
             val matched = if (isWifiConnected) {
-                (profile.second.wifiRule == RuleMode.ALL && !profile.second.ssidExclList.contains(wifiName)) ||
-                    (profile.second.wifiRule == RuleMode.SOME && profile.second.ssidInclList.contains(wifiName))
+                (profile.wifiRule == RuleMode.ALL && !profile.ssidExclList.contains(wifiName)) ||
+                    (profile.wifiRule == RuleMode.SOME && profile.ssidInclList.contains(wifiName))
             } else {
-                ((profile.second.mobileRule == RuleMode.ALL && !profile.second.carrierExclList.contains(carrierName)) ||
-                    (profile.second.mobileRule == RuleMode.SOME && profile.second.carrierInclList.contains(carrierName)))
+                ((profile.mobileRule == RuleMode.ALL && !profile.carrierExclList.contains(carrierName)) ||
+                    (profile.mobileRule == RuleMode.SOME && profile.carrierInclList.contains(carrierName)))
             }
 
             if (matched) {
-                currentMatch = profile
-                currentMatchPriority = profile.second.priority
+                currentMatch = profileEntry
+                currentMatchPriority = profile.priority
             }
         }
 
-        Log.i(javaClass.name, "Profile check, match name = ${currentMatch?.second?.name} tunnel = ${currentMatch?.second?.tunnelName}")
+        Log.i(javaClass.name, "Profile check, match name = ${currentMatch?.value?.name} tunnel = ${currentMatch?.value?.tunnelName}")
 
-        setWireguardTunnel(currentMatch?.second?.tunnelName)
+        setWireguardTunnel(currentMatch?.value?.tunnelName)
 
         if (currentMatch != null) {
-            currentMatch.second.lastConnectionDate = Date().time
-            profileStore.storeProfile(this, currentMatch.second, currentMatch.first)
+            currentMatch.value.lastConnectionDate = Date().time
+            profileStore.storeProfile(this, currentMatch.value, currentMatch.key)
         }
     }
 
     private fun setWireguardTunnel(tunnelName: String?) {
         Log.i(javaClass.name, "Toggle wireguard tunnel, name: $tunnelName")
-        val intent = if (tunnelName != null) {
+        val intents = if (tunnelName != null) {
             val intent = Intent("com.wireguard.android.action.SET_TUNNEL_UP")
             intent.putExtra("tunnel", tunnelName)
+            listOf(intent)
         } else {
-            Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
+            profileStore.getProfiles().values.map {
+                val intent = Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
+                intent.putExtra("tunnel", it.tunnelName)
+            }
         }
-        intent.`package` = "com.wireguard.android"
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sendBroadcast(intent)
+
+        for (intent in intents) {
+            intent.`package` = "com.wireguard.android"
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_RECEIVER_FOREGROUND
+            sendBroadcast(intent)
+        }
     }
 
     override fun onCreate() {
@@ -95,7 +96,6 @@ class MainService : Service() {
         Log.d(javaClass.name, "Service created")
 
         profileStore = ProfileStore(this)
-        loadEnabledProfiles()
 
         val notifManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

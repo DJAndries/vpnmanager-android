@@ -2,6 +2,7 @@ package ca.andries.vpnmanager
 
 import android.content.Intent
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -53,7 +54,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         permissionWrangler = PermissionWrangler {
-            startService(Intent(this, MainService::class.java))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
         }
         permissionWrangler.startPermissionCheck(this, requestPermissionLauncher)
 
