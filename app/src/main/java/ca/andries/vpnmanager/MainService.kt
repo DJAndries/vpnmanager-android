@@ -4,15 +4,9 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.app.job.JobInfo
-import android.app.job.JobParameters
-import android.app.job.JobScheduler
-import android.app.job.JobService
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.*
-import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
@@ -34,7 +28,7 @@ class MainService : Service() {
             profileStore.load(this)
             loadEnabledProfiles()
             val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (connManager.activeNetworkInfo?.isConnected == true) performCheck()
+            if (connManager.activeNetworkInfo?.isAvailable == true) performCheck()
         }
         return START_STICKY
     }
@@ -53,56 +47,47 @@ class MainService : Service() {
         val wifiName = wifiManager.connectionInfo.ssid.replace("(^\")|(\"$)".toRegex(), "")
         val carrierName = teleManager.simOperatorName
 
-        var explicitMatch: Pair<Int, Profile>? = null
-        var implicitMatch: Pair<Int, Profile>? = null
+        var currentMatch: Pair<Int, Profile>? = null
+        var currentMatchPriority = 0
 
-        val profIter = enabledProfiles.iterator()
-//        while (explicitMatch == null && profIter.hasNext()) {
-//            val profile = profIter.next()
-//            if (profile.second.enableForWifi && isWifiConnected) {
-//                if (!profile.second.ssidExclList.contains(wifiName)) {
-//                    if (profile.second.ssidInclList.isNotEmpty()) {
-//                        if (profile.second.ssidInclList.contains(wifiName) && explicitMatch == null) {
-//                            explicitMatch = profile
-//                        }
-//                    } else {
-//                        implicitMatch = profile
-//                    }
-//                }
-//                    explicitMatch = profile
-//                } else if (implicitMatch == null) {
-//                    implicitMatch = profile
-//                }
-//            }
-//            if (profile.second.enableForMobile && !isWifiConnected) {
-//                if (profile.second.carrierInclList.contains(carrierName) && explicitMatch == null) {
-//                    explicitMatch = profile
-//                } else if (!profile.second.carrierExclList.contains(carrierName) && implicitMatch == null) {
-//                    implicitMatch = profile
-//                }
-//            }
-//        }
+        for (profile in enabledProfiles) {
+            if (!profile.second.enabled || profile.second.priority <= currentMatchPriority) continue
 
-        Log.i(javaClass.name, "Profile check, implicit = ${implicitMatch?.second?.tunnelName} explicit = ${explicitMatch?.second?.name}")
+            val matched = if (isWifiConnected) {
+                (profile.second.wifiRule == RuleMode.ALL && !profile.second.ssidExclList.contains(wifiName)) ||
+                    (profile.second.wifiRule == RuleMode.SOME && profile.second.ssidInclList.contains(wifiName))
+            } else {
+                ((profile.second.mobileRule == RuleMode.ALL && !profile.second.carrierExclList.contains(carrierName)) ||
+                    (profile.second.mobileRule == RuleMode.SOME && profile.second.carrierInclList.contains(carrierName)))
+            }
 
-        val matchedProfile = explicitMatch ?: implicitMatch
-        setWireguardTunnel(matchedProfile?.second?.tunnelName)
+            if (matched) {
+                currentMatch = profile
+                currentMatchPriority = profile.second.priority
+            }
+        }
 
-        if (matchedProfile != null) {
-            matchedProfile.second.lastConnectionDate = Date().time
-            profileStore.storeProfile(this, matchedProfile.second, matchedProfile.first)
+        Log.i(javaClass.name, "Profile check, match name = ${currentMatch?.second?.name} tunnel = ${currentMatch?.second?.tunnelName}")
+
+        setWireguardTunnel(currentMatch?.second?.tunnelName)
+
+        if (currentMatch != null) {
+            currentMatch.second.lastConnectionDate = Date().time
+            profileStore.storeProfile(this, currentMatch.second, currentMatch.first)
         }
     }
 
     private fun setWireguardTunnel(tunnelName: String?) {
         Log.i(javaClass.name, "Toggle wireguard tunnel, name: $tunnelName")
-//        val intent = if (tunnelName != null) {
-//            val intent = Intent("com.wireguard.android.action.SET_TUNNEL_UP")
-//            intent.putExtra("tunnel", tunnelName)
-//        } else {
-//            Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
-//        }
-//        startActivity(intent)
+        val intent = if (tunnelName != null) {
+            val intent = Intent("com.wireguard.android.action.SET_TUNNEL_UP")
+            intent.putExtra("tunnel", tunnelName)
+        } else {
+            Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
+        }
+        intent.`package` = "com.wireguard.android"
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        sendBroadcast(intent)
     }
 
     override fun onCreate() {
