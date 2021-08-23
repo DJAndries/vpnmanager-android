@@ -20,9 +20,9 @@ class PermissionWrangler(private val finishCallback: () -> Unit) {
     )
     private var settingRequestIndex = 0
 
-    fun startPermissionCheck(ctx: Context, requestLauncher: ActivityResultLauncher<String>) {
+    fun startPermissionCheck(ctx: Context, requestLauncher: ActivityResultLauncher<String>, forceCheck: Boolean) {
         val prefs = ctx.getSharedPreferences(ctx.getString(R.string.main_pref_key), MODE_PRIVATE)
-        if (prefs.getBoolean(ctx.getString(R.string.perm_check_key), false)) {
+        if (!forceCheck && prefs.getBoolean(ctx.getString(R.string.perm_check_key), false)) {
             finishCallback()
             return
         }

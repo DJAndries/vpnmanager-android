@@ -1,35 +1,20 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <SwitchPreferenceCompat
+        app:key="show_toggle_notif"
+        app:summary="@string/toggle_notif_setting_desc"
+        app:title="@string/toggle_notif_setting" />
 
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
-
-    </PreferenceCategory>
+    <Preference
+        app:key="check_perms"
+        app:title="@string/check_perms_setting"
+        app:summary="@string/check_perms_setting_desc">
+        <intent
+            android:targetPackage="ca.andries.vpnmanager"
+            android:targetClass="ca.andries.vpnmanager.MainActivity">
+            <extra android:name="permission_check" android:value="true" />
+        </intent>
+    </Preference>
 
 </PreferenceScreen>

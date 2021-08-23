@@ -26,7 +26,7 @@
     <string name="profiles">Profiles</string>
     <string name="wireguard">Wireguard</string>
     <string name="wireguard_with_tunnel">Wireguard (%s)</string>
-    <string name="last_connection_time">Last connection time: %1$s</string>
+    <string name="last_connection_time">Last connection time: %s</string>
     <string name="profile_name">Profile Name</string>
     <string name="vpn_provider">VPN Provider</string>
     <string name="tunnel_name">Tunnel Name</string>
@@ -50,25 +50,22 @@
 
     <string name="serv_status_notif_channel_desc">Running service status</string>
     <string name="serv_status_notif_text">Service is running, notification can be disabled in system app settings</string>
+    <string name="toggle_notif_channel_desc">Connection status/toggle</string>
 
     <string name="main_pref_key">main_prefs</string>
     <string name="profiles_pref_key">profiles</string>
     <string name="profiles_next_id_key">next_pid</string>
     <string name="perm_check_key">perm_check</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="check_perms_setting">Check app permissions</string>
+    <string name="check_perms_setting_desc">Ensure relevant permissions are granted for this app</string>
+    <string name="toggle_notif_setting">Show notification with toggle button when connected to VPN</string>
+    <string name="toggle_notif_setting_desc">Adds ability to toggle the VPN connection while a profile is active</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="title_activity_settings">Settings</string>
 
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="vpn_connected">VPN connected: %s</string>
+    <string name="vpn_disconnected">VPN disconnected</string>
+    <string name="toggle_connection">Toggle connection</string>
 
 </resources>

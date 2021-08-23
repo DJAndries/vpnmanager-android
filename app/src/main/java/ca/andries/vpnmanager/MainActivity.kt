@@ -58,7 +58,8 @@ class MainActivity : AppCompatActivity() {
         permissionWrangler = PermissionWrangler {
             MainService.startService(this)
         }
-        permissionWrangler.startPermissionCheck(this, requestPermissionLauncher)
+        permissionWrangler.startPermissionCheck(this, requestPermissionLauncher,
+            intent.hasExtra(PERMISSION_CHECK_FLAG))
     }
 
     private fun requestNextPermission(isGranted: Boolean) {
@@ -81,7 +82,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -90,5 +94,9 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    companion object {
+        val PERMISSION_CHECK_FLAG = "permission_check"
     }
 }

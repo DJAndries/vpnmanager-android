@@ -14,94 +14,91 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/profileInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                app:errorEnabled="true"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/profile_name">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_marginStart="-12dp"
-                    android:layout_marginEnd="-12dp"
-                    android:id="@+id/profileNameInput"
+                android:orientation="vertical">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/profileInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    app:errorEnabled="true"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="true" />
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/profile_name">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_marginStart="-12dp"
+                        android:layout_marginEnd="-12dp"
+                        android:id="@+id/profileNameInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/vpnProvInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-                app:errorEnabled="true"
-                android:layout_width="match_parent"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/vpn_provider">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <AutoCompleteTextView
-                    android:id="@+id/vpnProvInput"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/vpnProvInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    app:errorEnabled="true"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="-12dp"
-                    android:layout_marginEnd="-12dp"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:singleLine="true" />
+                    android:hint="@string/vpn_provider">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <AutoCompleteTextView
+                        android:id="@+id/vpnProvInput"
+                        android:layout_width="match_parent"
+                        android:layout_marginStart="-12dp"
+                        android:layout_marginEnd="-12dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:singleLine="true" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tunnelInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/tunnel_name">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tunnelInput"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tunnelInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="-12dp"
-                    android:layout_marginEnd="-12dp"
-                    android:singleLine="true" />
+                    app:boxBackgroundColor="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/tunnel_name">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tunnelInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-12dp"
+                        android:layout_marginEnd="-12dp"
+                        android:singleLine="true" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/matching_priority"
-                android:labelFor="@id/matchingPriority"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-            />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.slider.Slider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:valueFrom="1.0"
-                android:valueTo="11.0"
-                android:stepSize="1.0"
-                android:value="6.0"
-                android:id="@+id/matchingPriority"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-            />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/matching_priority"
+                    android:labelFor="@id/matchingPriority"
+                    android:layout_marginTop="16dp"
+                />
+
+                <com.google.android.material.slider.Slider
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:valueFrom="1.0"
+                    android:valueTo="11.0"
+                    android:stepSize="1.0"
+                    android:value="6.0"
+                    android:id="@+id/matchingPriority"
+                />
+            </LinearLayout>
 
             <View
                 android:id="@+id/divider"
@@ -109,84 +106,90 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
                 android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/wifi_networks"
-                android:textStyle="bold" />
-
-            <RadioGroup
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/wifiRadioGroup"
-                android:checkedButton="@+id/wifiRadioNone">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
 
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/wifiRadioAll"
-                    android:text="@string/enabled_all_networks" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/ssidExclListLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/ssid_excl_list_label"
-                    app:boxBackgroundColor="@android:color/transparent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/ssidExclListInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="-12dp"
-                        android:layout_marginEnd="-12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/wifiRadioSome"
-                    android:text="@string/enabled_some_networks" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/ssidInclListLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/ssid_incl_list_label"
-                    app:boxBackgroundColor="@android:color/transparent">
+                    android:text="@string/wifi_networks"
+                    android:textStyle="bold" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/ssidInclListInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="-12dp"
-                        android:layout_marginEnd="-12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <RadioButton
+                <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/wifiRadioNone"
-                    android:text="@string/disabled" />
-            </RadioGroup>
+                    android:id="@+id/wifiRadioGroup"
+                    android:checkedButton="@+id/wifiRadioNone">
 
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/wifiRadioAll"
+                        android:text="@string/enabled_all_networks" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/ssidExclListLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/ssid_excl_list_label"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/ssidExclListInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="-12dp"
+                            android:layout_marginEnd="-12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/wifiRadioSome"
+                        android:text="@string/enabled_some_networks" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/ssidInclListLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/ssid_incl_list_label"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/ssidInclListInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="-12dp"
+                            android:layout_marginEnd="-12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/wifiRadioNone"
+                        android:text="@string/disabled" />
+                </RadioGroup>
+            </LinearLayout>
 
             <View
                 android:id="@+id/divider2"
@@ -194,81 +197,88 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
                 android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/mobile_networks"
-                android:textStyle="bold" />
-            <RadioGroup
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mobileRadioGroup"
-                android:checkedButton="@+id/mobileRadioNone">
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/mobileRadioAll"
-                    android:text="@string/enabled_all_networks" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/carrierExclListLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/carrier_excl_list_label"
-                    app:boxBackgroundColor="@android:color/transparent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/carrierExclListInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="-12dp"
-                        android:layout_marginEnd="-12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/mobileRadioSome"
-                    android:text="@string/enabled_some_networks" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/carrierInclListLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@android:color/transparent"
-                    android:hint="@string/carrier_incl_list_label"
-                    app:boxBackgroundColor="@android:color/transparent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/carrierInclListInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="-12dp"
-                        android:layout_marginEnd="-12dp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <RadioButton
+                    android:text="@string/mobile_networks"
+                    android:textStyle="bold" />
+                <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/mobileRadioNone"
-                    android:text="@string/disabled" />
-            </RadioGroup>
+                    android:id="@+id/mobileRadioGroup"
+                    android:checkedButton="@+id/mobileRadioNone">
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/mobileRadioAll"
+                        android:text="@string/enabled_all_networks" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/carrierExclListLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/carrier_excl_list_label"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/carrierExclListInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="-12dp"
+                            android:layout_marginEnd="-12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/mobileRadioSome"
+                        android:text="@string/enabled_some_networks" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/carrierInclListLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/carrier_incl_list_label"
+                        app:boxBackgroundColor="@android:color/transparent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/carrierInclListInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="-12dp"
+                            android:layout_marginEnd="-12dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/mobileRadioNone"
+                        android:text="@string/disabled" />
+                </RadioGroup>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
