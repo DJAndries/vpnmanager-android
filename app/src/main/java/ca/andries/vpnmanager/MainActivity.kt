@@ -1,9 +1,11 @@
 package ca.andries.vpnmanager
 
 import android.content.Intent
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -54,39 +56,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         permissionWrangler = PermissionWrangler {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
+            MainService.startService(this)
         }
         permissionWrangler.startPermissionCheck(this, requestPermissionLauncher)
-
-//        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        cm.registerNetworkCallback(NetworkRequest.Builder().build(), object : ConnectivityManager.NetworkCallback() {
-//            override fun onAvailable(network: Network) {
-//                super.onAvailable(network);
-//                Log.d(javaClass.name, "ahahaghahahahaha")
-//                Toast.makeText(applicationContext, "Test", Toast.LENGTH_LONG).show()
-//            }
-//        })
-//        val filter = IntentFilter()
-//        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE")
-//        registerReceiver(NetworkChangeRecevier(), filter)
-//
-//        val job = JobInfo.Builder(0, ComponentName(this, NetworkChangeService::class.java))
-//            .setMinimumLatency(1000)
-//            .setOverrideDeadline(3000)
-//            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-//            .setPersisted(true)
-//            .build()
-//
-//        val scheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler;
-//        scheduler.schedule(job)
-
-        val wifiNet = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.ssid
-        val wifiNetBssid = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo.bssid
-        Log.d(javaClass.name, "Avail! wifi: $wifiNet $wifiNetBssid")
     }
 
     private fun requestNextPermission(isGranted: Boolean) {

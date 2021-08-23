@@ -63,7 +63,7 @@ class MainService : Service() {
 
         Log.i(javaClass.name, "Profile check, match name = ${currentMatch?.value?.name} tunnel = ${currentMatch?.value?.tunnelName}")
 
-        setWireguardTunnel(currentMatch?.value?.tunnelName)
+        setWireguardTunnel(currentMatch?.key)
 
         if (currentMatch != null) {
             currentMatch.value.lastConnectionDate = Date().time
@@ -71,22 +71,20 @@ class MainService : Service() {
         }
     }
 
-    private fun setWireguardTunnel(tunnelName: String?) {
-        Log.i(javaClass.name, "Toggle wireguard tunnel, name: $tunnelName")
-        val intents = if (tunnelName != null) {
-            val intent = Intent("com.wireguard.android.action.SET_TUNNEL_UP")
-            intent.putExtra("tunnel", tunnelName)
-            listOf(intent)
-        } else {
-            profileStore.getProfiles().values.map {
-                val intent = Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
-                intent.putExtra("tunnel", it.tunnelName)
-            }
-        }
+    private fun setWireguardTunnel(profileId: Int?) {
+        val profiles = profileStore.getProfiles()
+        Log.i(javaClass.name, "Toggle wireguard tunnel, name: $profileId tunnel: ${profiles[profileId]?.tunnelName}")
 
-        for (intent in intents) {
+        for (profileEntry in profileStore.getProfiles().entries) {
+            val intent = Intent(
+                if (profileId == profileEntry.key) {
+                    "com.wireguard.android.action.SET_TUNNEL_UP"
+                } else {
+                    "com.wireguard.android.action.SET_TUNNEL_DOWN"
+                }
+            )
+            intent.putExtra("tunnel", profileEntry.value.tunnelName)
             intent.`package` = "com.wireguard.android"
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_RECEIVER_FOREGROUND
             sendBroadcast(intent)
         }
     }
@@ -99,49 +97,59 @@ class MainService : Service() {
 
         val notifManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val chan = NotificationChannel("test", "test123", NotificationManager.IMPORTANCE_DEFAULT)
+            val chan = NotificationChannel(
+                SERV_STATUS_NOTIF_CHANNEL_ID,
+                getString(R.string.serv_status_notif_channel_desc),
+                NotificationManager.IMPORTANCE_NONE
+            )
             notifManager.createNotificationChannel(chan)
             startForeground(1,
-                Notification.Builder(this, chan.id).setContentText("Running...")
-                    .setSmallIcon(R.drawable.ic_launcher_foreground).build()
+                Notification.Builder(this, chan.id)
+                    .setContentText(getString(R.string.serv_status_notif_text))
+                    .setSmallIcon(R.drawable.ic_shield)
+                    .setStyle(Notification.BigTextStyle().bigText(getString(R.string.serv_status_notif_text)))
+                    .build()
             )
         }
-        val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val teleManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        manager.registerNetworkCallback(NetworkRequest.Builder().build(), object : ConnectivityManager.NetworkCallback() {
+
+        connManager.registerNetworkCallback(NetworkRequest.Builder().build(), object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 val wifiNet = wifiManager.connectionInfo.ssid
-                val wifiNetBssid = wifiManager.connectionInfo.ipAddress
-                Log.d(javaClass.name, "Avail! wifi: $wifiNet $wifiNetBssid")
+                val operatorName = teleManager.simOperatorName
+                Log.i(javaClass.name, "Network available! wifi: $wifiNet SIM operator: $operatorName")
                 performCheck()
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
+                Log.i(javaClass.name, "Network lost!")
                 setWireguardTunnel(null)
-            }
-
-            override fun onCapabilitiesChanged(
-                network: Network,
-                networkCapabilities: NetworkCapabilities
-            ) {
-                super.onCapabilitiesChanged(network, networkCapabilities)
-                val wifiNet = wifiManager.connectionInfo.ssid
-                val teleNet = teleManager.simOperatorName
-                Log.d(javaClass.name, "Avail2! wifi: $wifiNet $teleNet")
             }
         })
     }
 
     companion object {
         val RELOAD_FLAG = "reload_flag"
+        private val SERV_STATUS_NOTIF_CHANNEL_ID = "serv_status"
 
         fun reloadFromActivity(context: Context) {
             val intent = Intent(context, MainService::class.java)
             intent.putExtra(RELOAD_FLAG, true)
             context.startService(intent)
+        }
+
+        fun startService(context: Context) {
+            val intent = Intent(context, MainService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         }
     }
 }
