@@ -6,6 +6,7 @@ import kotlin.collections.LinkedHashSet
 @Serializable
 class Profile(
     val name: String,
+    val provider: Provider,
     val tunnelName: String,
     val wifiRule: RuleMode,
     val mobileRule: RuleMode,

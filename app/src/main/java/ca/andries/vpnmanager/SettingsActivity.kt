@@ -55,6 +55,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     companion object {
-        val SHOW_TOGGLE_NOTIF = "show_toggle_notif"
+        const val SHOW_TOGGLE_NOTIF = "show_toggle_notif"
     }
 }

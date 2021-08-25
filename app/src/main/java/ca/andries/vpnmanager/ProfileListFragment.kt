@@ -50,7 +50,7 @@ class ProfileListFragment : Fragment() {
         }
         binding.emptyView.visibility = if (profiles.isEmpty()) View.VISIBLE else View.GONE
         binding.list.visibility = if (profiles.isEmpty()) View.INVISIBLE else View.VISIBLE
-        model.getProfiles().observe(viewLifecycleOwner, Observer<List<Pair<Int, Profile>>> { list ->
+        model.getProfiles().observe(viewLifecycleOwner, { list ->
             (binding.list.adapter as MyProfileRecyclerViewAdapter).setValues(list)
             binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             binding.list.visibility = if (list.isEmpty()) View.INVISIBLE else View.VISIBLE

@@ -18,6 +18,7 @@ import kotlinx.serialization.json.Json
 class ProfileConfigActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileConfigBinding
+    private lateinit var providerMap: LinkedHashMap<Provider, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +32,13 @@ class ProfileConfigActivity : AppCompatActivity() {
         } else {
             null
         }
+
+        providerMap = linkedMapOf(
+            Pair(Provider.WIREGUARD, getString(R.string.wireguard)),
+            Pair(Provider.ICS_OPENVPN, getString(R.string.openvpn_ics)),
+            Pair(Provider.OPENVPN_CONNECT_PROFILE, getString(R.string.openvpn_connect_profile)),
+            Pair(Provider.OPENVPN_CONNECT_AS, getString(R.string.openvpn_connect_as))
+        )
 
         initPrimaryInputs(existingProfile)
         initEnableDisableInputs(existingProfile)
@@ -68,10 +76,9 @@ class ProfileConfigActivity : AppCompatActivity() {
         binding.vpnProvInput.setAdapter(ArrayAdapter(
             applicationContext,
             R.layout.list_provider_item,
-            listOf(getString(R.string.wireguard))
-        ));
-        binding.vpnProvInput.setText(getString(R.string.wireguard))
-
+            providerMap.values.toList()
+        ))
+        binding.vpnProvInput.setText(providerMap[existingProfile?.provider] ?: "", false)
     }
 
     private fun initEnableDisableInputs(existingProfile: Profile?) {
@@ -110,6 +117,7 @@ class ProfileConfigActivity : AppCompatActivity() {
     private fun validateInputs(): Boolean {
         val textInputs = listOf(
             Pair(binding.profileInputLayout, binding.profileNameInput),
+            Pair(binding.vpnProvInputLayout, binding.vpnProvInput),
             Pair(binding.tunnelInputLayout, binding.tunnelInput)
         )
         for (textInput in textInputs) {
@@ -138,6 +146,7 @@ class ProfileConfigActivity : AppCompatActivity() {
 
         val profile = Profile(
             binding.profileNameInput.text.toString(),
+            providerMap.entries.find { it.value == binding.vpnProvInput.text.toString() }?.key!!,
             binding.tunnelInput.text.toString(),
             wifiRule,
             mobileRule,
@@ -164,7 +173,7 @@ class ProfileConfigActivity : AppCompatActivity() {
     }
 
     companion object {
-        val PROFILE_KEY = "profile"
-        val PROFILE_ID_KEY = "pid"
+        const val PROFILE_KEY = "profile"
+        const val PROFILE_ID_KEY = "pid"
     }
 }

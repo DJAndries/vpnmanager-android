@@ -24,8 +24,7 @@
     <string name="save">Save</string>
     <string name="never_connected">Never connected</string>
     <string name="profiles">Profiles</string>
-    <string name="wireguard">Wireguard</string>
-    <string name="wireguard_with_tunnel">Wireguard (%s)</string>
+
     <string name="last_connection_time">Last connection time: %s</string>
     <string name="profile_name">Profile Name</string>
     <string name="vpn_provider">VPN Provider</string>
@@ -67,5 +66,13 @@
     <string name="vpn_connected">VPN connected: %s</string>
     <string name="vpn_disconnected">VPN disconnected</string>
     <string name="toggle_connection">Toggle connection</string>
+
+    <string name="wireguard">Wireguard</string>
+    <string name="wireguard_with_tunnel">Wireguard (%s)</string>
+    <string name="openvpn">OpenVPN</string>
+    <string name="openvpn_with_tunnel">OpenVPN (%s)</string>
+    <string name="openvpn_ics">OpenVPN (ics-openvpn)</string>
+    <string name="openvpn_connect_profile">OpenVPN (Connect app, OVPN profile)</string>
+    <string name="openvpn_connect_as">OpenVPN (Connect app, OVPN access server)</string>
 
 </resources>

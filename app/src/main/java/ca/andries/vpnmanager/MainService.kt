@@ -15,7 +15,6 @@ import java.util.*
 
 class MainService : Service() {
     private lateinit var profileStore: ProfileStore
-    private lateinit var enabledProfiles: List<Pair<Int, Profile>>
 
     private var toggleNotifEnabled = false
     private var disabledByNotification = false
@@ -25,22 +24,20 @@ class MainService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val isConnected = connManager.activeNetworkInfo?.isAvailable == true
         if (intent?.getBooleanExtra(RELOAD_FLAG, false) == true) {
             Log.i(javaClass.name, "Reload intent received")
             loadToggleNotifEnabled()
             resetToggle()
             profileStore.load(this)
-            if (isConnected) performCheck()
+            performCheck()
         }
         if (intent?.getBooleanExtra(TOGGLE_BY_NOTIF_FLAG, false) == true) {
             Log.i(javaClass.name, "Notif toggle intent received")
             disabledByNotification = !disabledByNotification
             if (disabledByNotification) {
-                setWireguardTunnel(null)
+                TunnelManager.shutdownTunnels(this, profileStore.getProfiles(), null)
                 showToggleNotification(null)
-            } else if (isConnected) {
+            } else {
                 performCheck()
             }
         }
@@ -48,6 +45,12 @@ class MainService : Service() {
     }
 
     private fun performCheck() {
+        val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connManager.allNetworkInfo.none { it.typeName != "VPN" && it.isConnectedOrConnecting }) {
+            Log.i(javaClass.name, "Not connected, killing tunnel if connected")
+            TunnelManager.toggleTunnel(this, profileStore.getProfiles(), null)
+            return
+        }
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val teleManager = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
@@ -78,30 +81,12 @@ class MainService : Service() {
 
         Log.i(javaClass.name, "Profile check, match name = ${currentMatch?.value?.name} tunnel = ${currentMatch?.value?.tunnelName}")
 
-        setWireguardTunnel(currentMatch?.key)
+        TunnelManager.toggleTunnel(this, profileStore.getProfiles(), currentMatch)
 
         if (currentMatch != null) {
             currentMatch.value.lastConnectionDate = Date().time
             profileStore.storeProfile(this, currentMatch.value, currentMatch.key)
             showToggleNotification(currentMatch.value.tunnelName)
-        }
-    }
-
-    private fun setWireguardTunnel(profileId: Int?) {
-        val profiles = profileStore.getProfiles()
-        Log.i(javaClass.name, "Toggle wireguard tunnel, name: $profileId tunnel: ${profiles[profileId]?.tunnelName}")
-
-        for (profileEntry in profileStore.getProfiles().entries) {
-            val intent = Intent(
-                if (profileId == profileEntry.key) {
-                    "com.wireguard.android.action.SET_TUNNEL_UP"
-                } else {
-                    "com.wireguard.android.action.SET_TUNNEL_DOWN"
-                }
-            )
-            intent.putExtra("tunnel", profileEntry.value.tunnelName)
-            intent.`package` = "com.wireguard.android"
-            sendBroadcast(intent)
         }
     }
 
@@ -182,31 +167,33 @@ class MainService : Service() {
         val teleManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         connManager.registerNetworkCallback(NetworkRequest.Builder().build(), object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                super.onAvailable(network)
+            private fun onChange(event: String) {
                 resetToggle()
                 val wifiNet = wifiManager.connectionInfo.ssid
                 val operatorName = teleManager.simOperatorName
-                Log.i(javaClass.name, "Network available! wifi: $wifiNet SIM operator: $operatorName")
+                Log.i(javaClass.name, "Network $event! wifi: $wifiNet SIM operator: $operatorName")
                 performCheck()
+            }
+
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                onChange("available")
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                resetToggle()
-                Log.i(javaClass.name, "Network lost!")
-                setWireguardTunnel(null)
+                onChange("lost")
             }
         })
     }
 
     companion object {
-        private val RELOAD_FLAG = "reload_flag"
-        private val TOGGLE_BY_NOTIF_FLAG = "toggle_notif"
-        private val SERV_STATUS_NOTIF_CHANNEL_ID = "serv_status"
-        private val TOGGLE_NOTIF_CHANNEL_ID = "toggle"
-        private val TOGGLE_NOTIF_ID = 13
-        private val SERV_STATUS_NOTIF_ID = 1
+        private const val RELOAD_FLAG = "reload_flag"
+        private const val TOGGLE_BY_NOTIF_FLAG = "toggle_notif"
+        private const val SERV_STATUS_NOTIF_CHANNEL_ID = "serv_status"
+        private const val TOGGLE_NOTIF_CHANNEL_ID = "toggle"
+        private const val TOGGLE_NOTIF_ID = 13
+        private const val SERV_STATUS_NOTIF_ID = 1
 
         fun reloadFromActivity(context: Context) {
             val intent = Intent(context, MainService::class.java)

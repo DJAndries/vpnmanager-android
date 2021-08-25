@@ -41,7 +41,10 @@ class MyProfileRecyclerViewAdapter(
         holder.lastTime.text = ctx.getString(R.string.last_connection_time, lastConnVal)
         holder.name.text = item.second.name
         holder.enabledLabel.text = ctx.getString(if (item.second.enabled) R.string.enabled else R.string.disabled)
-        holder.provider.text = ctx.getString(R.string.wireguard_with_tunnel, item.second.tunnelName)
+        holder.provider.text = when (item.second.provider) {
+            Provider.WIREGUARD -> ctx.getString(R.string.wireguard_with_tunnel, item.second.tunnelName)
+            else -> ctx.getString(R.string.openvpn_with_tunnel, item.second.tunnelName)
+        }
         holder.toggleBtn.text = ctx.getString(if (item.second.enabled) R.string.disable else R.string.enable)
         holder.coverImg.alpha = if (item.second.enabled) 1f else .5f
         holder.toggleBtn.setOnClickListener {

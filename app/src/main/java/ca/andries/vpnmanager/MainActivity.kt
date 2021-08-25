@@ -1,5 +1,6 @@
 package ca.andries.vpnmanager
 
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.net.wifi.WifiManager
@@ -97,6 +98,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        val PERMISSION_CHECK_FLAG = "permission_check"
+        const val PERMISSION_CHECK_FLAG = "permission_check"
     }
 }
