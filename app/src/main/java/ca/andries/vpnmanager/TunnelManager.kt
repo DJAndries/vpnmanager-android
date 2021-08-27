@@ -1,17 +1,24 @@
 package ca.andries.vpnmanager
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 object TunnelManager {
 
     fun toggleTunnel(context: Context, profiles: Map<Int, Profile>, profileToActivate: Map.Entry<Int, Profile>?) {
-        val tunnelsShutdown = shutdownTunnels(context, profiles, profileToActivate?.key)
-        if (tunnelsShutdown) Thread.sleep(1100)
-        if (profileToActivate != null) {
-            setTunnel(context, profileToActivate.value, true)
+        GlobalScope.launch {
+            val tunnelsShutdown = shutdownTunnels(context, profiles, profileToActivate?.key)
+            if (tunnelsShutdown) Thread.sleep(1500)
+            if (profileToActivate != null) {
+                setTunnel(context, profileToActivate.value, true)
+            }
         }
     }
 
@@ -50,7 +57,8 @@ object TunnelManager {
     private fun setWireguardTunnel(context: Context, profile: Profile, isUp: Boolean) {
         Log.i(javaClass.name, "Toggle wireguard tunnel, name: ${profile.name} tunnel: ${profile?.tunnelName} desired status: $isUp")
 
-        val intent = Intent("com.wireguard.android.action.SET_TUNNEL_DOWN")
+        val intentName = if (isUp) "SET_TUNNEL_UP" else "SET_TUNNEL_DOWN"
+        val intent = Intent("com.wireguard.android.action.$intentName")
         intent.putExtra("tunnel", profile.tunnelName)
         intent.`package` = "com.wireguard.android"
         context.sendBroadcast(intent)
@@ -70,7 +78,11 @@ object TunnelManager {
         } else {
             intent.putExtra("net.openvpn.openvpn.STOP", true)
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Log.e(javaClass.name, "Failed to send OpenVPN intent, no activity found")
+        }
     }
 
     private fun setICSOVPNTunnel(context: Context, profile: Profile?) {
@@ -86,6 +98,10 @@ object TunnelManager {
         } else {
             intent.setClassName("de.blinkt.openvpn", "de.blinkt.openvpn.api.DisconnectVPN")
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Log.e(javaClass.name, "Failed to send OpenVPN intent, no activity found")
+        }
     }
 }

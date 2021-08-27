@@ -47,6 +47,9 @@ class MyProfileRecyclerViewAdapter(
         }
         holder.toggleBtn.text = ctx.getString(if (item.second.enabled) R.string.disable else R.string.enable)
         holder.coverImg.alpha = if (item.second.enabled) 1f else .5f
+        if (item.second.provider != Provider.WIREGUARD)
+            holder.coverImg.setImageDrawable(ctx.getDrawable(R.drawable.openvpn_logo))
+
         holder.toggleBtn.setOnClickListener {
             listener(EventType.TOGGLE, item)
         }

@@ -4,3 +4,6 @@
 - test bringing multiple tunnels down
 - test what happens if wireguard not installed
 - instruct user to turn off battery optimizations for wireguard
+
+- run thread sleep in async or async queue
+- add ovpn image, modify wireguard image
