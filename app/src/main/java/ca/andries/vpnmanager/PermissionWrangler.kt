@@ -16,6 +16,7 @@ class PermissionWrangler(private val finishCallback: () -> Unit) {
         SettingRequest(Manifest.permission.ACCESS_FINE_LOCATION, true, 27, R.string.fine_location_perm_prompt),
         SettingRequest(Manifest.permission.ACCESS_BACKGROUND_LOCATION, true, 29, R.string.bg_location_perm_prompt, true),
         SettingRequest("com.wireguard.android.permission.CONTROL_TUNNELS", true, 1, null),
+        SettingRequest(null, false, 1, R.string.wireguard_allow_remote_prompt, true),
         SettingRequest(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS, false, 1, R.string.battery_optimization_prompt, true)
     )
     private var settingRequestIndex = 0
@@ -39,7 +40,7 @@ class PermissionWrangler(private val finishCallback: () -> Unit) {
             return
         }
         if (Build.VERSION.SDK_INT >= info.minVersion && (!info.promptIfLastPermGranted || lastPermGranted)) {
-            if (info.isPermission) {
+            if (info.isPermission && info.action != null) {
                 // check and request permission
                 if (ContextCompat.checkSelfPermission(ctx, info.action) != PackageManager.PERMISSION_GRANTED) {
                     if (info.educationStringRes != null) {
@@ -49,30 +50,26 @@ class PermissionWrangler(private val finishCallback: () -> Unit) {
                             .setPositiveButton(R.string.ok) { _, _ ->
                                 requestLauncher.launch(info.action)
                             }.show()
-                    } else {
-                        requestLauncher.launch(info.action)
-                    }
-                    return
-                }
+                    } else requestLauncher.launch(info.action)
+                } else requestNextPermission(ctx, requestLauncher, true)
             } else {
+                val cb = {
+                    if (info.action != null) ctx.startActivity(Intent(info.action))
+                    requestNextPermission(ctx, requestLauncher, true)
+                }
                 // start action
                 if (info.educationStringRes != null) {
                     AlertDialog.Builder(ctx)
                         .setTitle(R.string.action_request)
                         .setMessage(info.educationStringRes)
-                        .setPositiveButton(R.string.ok) { _, _ ->
-                            ctx.startActivity(Intent(info.action))
-                        }.show()
-                } else {
-                    ctx.startActivity(Intent(info.action))
-                }
+                        .setPositiveButton(R.string.ok) { _, _ -> cb() }.show()
+                } else cb()
             }
         }
-        requestNextPermission(ctx, requestLauncher, true)
     }
 
     private class SettingRequest(
-        val action: String,
+        val action: String?,
         val isPermission: Boolean,
         val minVersion: Int,
         val educationStringRes: Int?,

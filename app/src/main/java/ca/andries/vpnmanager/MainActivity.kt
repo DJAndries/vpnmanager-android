@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         permissionWrangler = PermissionWrangler {
             MainService.startService(this)
+            intent.removeExtra(PERMISSION_CHECK_FLAG)
         }
         permissionWrangler.startPermissionCheck(this, requestPermissionLauncher,
             intent.hasExtra(PERMISSION_CHECK_FLAG))

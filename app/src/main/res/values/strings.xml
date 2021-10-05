@@ -46,7 +46,8 @@
     <string name="fine_location_perm_prompt">VPN Manager has the ability to enable/disable VPNs for specific Wi-Fi SSIDs. This feature requires the location permission. If you are not interested in this feature, you may deny access to this permission.</string>
     <string name="bg_location_perm_prompt">In order for VPN Manager to monitor the connected Wi-FI SSID in the background, the location permission must "allowed all the time".</string>
     <string name="battery_optimization_prompt">In order for Wireguard to receive actions in the background, battery optimizations must be turned off for Wireguard. The system battery settings will be opened. Search for the Wireguard app and disable battery optimizations.</string>
-
+    <string name="wireguard_allow_remote_prompt">Ensure \"Allow remote control apps\" is enabled in Wireguard.</string>
+Side
     <string name="serv_status_notif_channel_desc">Running service status</string>
     <string name="serv_status_notif_text">Service is running, notification can be disabled in system app settings</string>
     <string name="toggle_notif_channel_desc">Connection status/toggle</string>
